@@ -104,4 +104,4 @@ export const civilLawWords = [
   { word: "replevin", definition: "Lawsuit to recover wrongfully taken property." }
 ];
 
-export const caseCheckpoints = ["Jury selection", "Opening statements", "Your case-in-chief", "Opponent's case-in-chief", "Your rebuttal case", "Closing arguments"]
+export const caseCheckpoints = ["Jury selection", "Opening statements", "Your case-in-chief", "Opponent's case-in-chief", "Your rebuttal case", "Closing arguments", "Jury deliberations"]
