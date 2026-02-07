@@ -1,19 +1,24 @@
 import { useState } from 'react'
+import clsx from 'clsx'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import {  faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
 import { criminalLawWords, civilLawWords, caseCheckpoints } from "./data.js"
 import './index.css'
 
 function App() {
  
   const randomNumber = Math.round(Math.random() * criminalLawWords.length)
-  const randomCriminalLawWord = criminalLawWords[randomNumber].word
-  const randomCivilLawWord = civilLawWords[randomNumber].word
-  const [randomWord, setRandomWord] = useState("")
+  const randomCriminalLawWord = criminalLawWords[randomNumber]
 
+  const randomCivilLawWord = civilLawWords[randomNumber]
+
+  const [randomWord, setRandomWord] = useState({word:"", description:""})
+console.log("randomWord", randomWord)
   const alphabet = "abcdefghijklmnopqrstuvwxyz"
-  const [guessedLetter, setGuessedLetters] = useState([])
+  const [guessedLetters, setGuessedLetters] = useState([])
   const [incorrectGuesses, setIncorrectGuesses] = useState(0)
   console.log(incorrectGuesses)
-
+  const [isInitialScreenDisplayed, setIsInitialScreenDisplayed] = useState(true)
   const [isGameOver, setIsGameOver] = useState(false)
 
   //function - logic when user guesses a letter 
@@ -24,7 +29,7 @@ function App() {
         }else{
           return prevLetters
         }})
-      if (randomWord.includes(letter)){
+      if (randomWord.word.includes(letter)){
           console.log(`${letter} is in the word!`)
       }
       else{
@@ -46,15 +51,24 @@ function App() {
   const [gameStarted, setGameStarted] = useState(false)
 
   function startGame(word){
+    setIsInitialScreenDisplayed(false)
     setGameStarted(true)
     setRandomWord(word)
   }
 
-  return (
-    <div className="flex flex-col justify-center items-center p-6">
-  
+function startNewGame(){
+    setIsInitialScreenDisplayed(true)
+    setGameStarted(false)
+    setIsGameOver(false)
+    setRandomWord({word:"", description:""})
+    setIncorrectGuesses(0)
+    setGuessedLetters([])
+}
 
-    <main>
+  return (
+    <div className="flex flex-col justify-center items-center p-6 max-w-4xl mx-auto">
+
+    <main className="">
     {gameStarted? 
       <div className="flex flex-col items-center justify-center">
          <h1 className="text-4xl mb-6">Lawyer Hangman</h1>
@@ -63,37 +77,41 @@ function App() {
           <div className="flex flex-wrap justify-center">
         {caseCheckpoints.map(checkpoint=><p className="border px-4 py-2">{checkpoint}</p>)}
           </div>
-          <label className="flex gap-2">Your guesses:
-          {guessedLetter.length > 0 && guessedLetter.map(letter=><p>{letter}</p>)}
-        </label>
+     
         </section>
-      <section className="flex flex-row justify-center mb-8 gap-2">
-        {randomWord.split("").map(letter=> <span className="border-b-2 px-4 py-2">{letter.toUpperCase()}</span>)}
-        
+      <section className="flex flex-col justify-center items-center mb-8 gap-2">
+        <div className="flex flex-row gap-2 mb-6">
+        {!isGameOver && randomWord.word.split("").map(letter=> <span className={`px-4 py-2 ${letter === " "? "":"border-b-2"}`}>{guessedLetters.includes(letter)? letter.toUpperCase(): " "}</span>)}
+        {isGameOver && randomWord.word.split("").map(letter=> <span className={`px-4 py-2 ${letter === " "? "":"border-b-2"}`}><p className={!guessedLetters.includes(letter) && randomWord.word.includes(letter)? "text-red-500": ""}>{letter.toUpperCase()}</p></span>)}
+        </div>
+        <p className="text-xl">{randomWord.definition}</p>
       </section>
  
     {/*Keyboard*/}
     <section className="flex flex-col justify-center items-center gap-8">
       <div className="flex flex-row justify-center items-center flex-wrap">
       {alphabet.split("").map(letter=>{
-        return <button className="border-2 py-2 px-4" onClick={()=>guessLetter(letter)}>{letter.toUpperCase()}</button>
+        return <button className={clsx( "border-2 py-2 px-4", {"bg-green-500": randomWord.word.includes(letter) && guessedLetters.includes(letter), "bg-red-500": !randomWord.word.includes(letter) && guessedLetters.includes(letter)})} onClick={()=>guessLetter(letter)} disabled={isGameOver? true: false}>{letter.toUpperCase()}</button>
       })}
       </div>
-      {isGameOver && <button className="border px-4 py-2 rounded-lg">Play Again</button>}
+      {isGameOver && <button className="border px-4 py-2 rounded-lg" onClick={()=>startNewGame()}>Play Again</button>}
     </section>
     </div>
    : 
-    <div className="flex flex-col justify-center items-center min-h-screen">
+    (isInitialScreenDisplayed && (<div className="flex flex-col justify-center items-center min-h-screen">
       <h1 className="text-4xl mb-6">Lawyer Hangman</h1>
-      <h2 className="text-xl">Would you like to guess words related to criminal law or civil law? </h2>
+      <h2 className="text-xl">Would you like to guess legal terms related to criminal law or civil law? </h2>
       <div className="flex gap-4 pt-8">
         <button className="border px-4 py-2 rounded-lg text-xl" onClick={()=>startGame(randomCriminalLawWord)}>Criminal Law 🚓</button>
         <button className="border px-4 py-2 rounded-lg text-xl" onClick={()=>startGame(randomCivilLawWord)}>Civil Law 💰 </button>
       </div>
-    </div>
-    }
+    </div>))}
+
     </main>
-    <footer></footer>
+    <footer className="flex justify-content items-center gap-1">
+        <p>JDJD Codes</p>
+        <FontAwesomeIcon icon={faScaleBalanced}></FontAwesomeIcon>
+    </footer>
     </div>
   )
 }
