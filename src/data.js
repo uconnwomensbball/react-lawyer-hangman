@@ -104,4 +104,10 @@ export const civilLawWords = [
   { word: "replevin", definition: "Lawsuit to recover wrongfully taken property" }
 ];
 
-export const caseCheckpoints = ["Jury selection", "Opening statements", "Your case-in-chief", "Opponent's case-in-chief", "Your rebuttal case", "Closing arguments", "Jury deliberations"]
+export const caseCheckpoints = [{checkpoint: "Jury selection", background: "bg-orange-50", border: "border-orange-500"},
+                                {checkpoint: "Opening statements", background: "bg-blue-50", border: "border-blue-500"},
+                                {checkpoint: "Your case-in-chief", background: "bg-red-50", border: "border-red-500"},
+                                {checkpoint: "Opponent's case-in-chief", background: "bg-green-50", border: "border-green-500"},
+                                {checkpoint: "Your rebuttal case", background: "bg-cyan-50", border: "border-cyan-500"},
+                                {checkpoint: "Closing arguments", background: "bg-yellow-50", border: "border-yellow-500"},
+                                {checkpoint: "Jury deliberations", background: "bg-purple-50", border: "border-purple-500"}]

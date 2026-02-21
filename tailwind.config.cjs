@@ -5,7 +5,12 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}"
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily:{
+        bzks: ['Bpmf Zihi Kai Std', 'sans-serif'
+        ]
+      }
+    },
   },
   plugins: [],
 }

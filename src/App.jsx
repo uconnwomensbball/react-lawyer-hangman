@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import clsx from 'clsx'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import {  faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
+import {  faGavel, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
 import { criminalLawWords, civilLawWords, caseCheckpoints } from "./data.js"
 import './index.css'
 
@@ -66,16 +66,18 @@ function startNewGame(){
 }
 
   return (
-    <div className="flex flex-col justify-center items-center p-6 max-w-4xl mx-auto">
+     <div className="font-bzks bg-slate-50 flex flex-col items-center p-6 min-h-screen">
 
-    <main className="">
+    <main className="max-w-4xl flex-1">
     {gameStarted? 
       <div className="flex flex-col items-center justify-center">
-         <h1 className="text-4xl mb-6">Lawyer Hangman</h1>
+        <FontAwesomeIcon icon={faGavel} size="5x"></FontAwesomeIcon>
+         <h1 className="text-4xl mt-4">Lawyer Hangman</h1>
+          
         <section className="flex flex-col items-center gap-8 mb-8 mt-6 text-xl">
           <p>Guess the word before the jury returns its verdict</p>
-          <div className="flex flex-wrap justify-center">
-        {caseCheckpoints.map(checkpoint=><p className="border px-4 py-2">{checkpoint}</p>)}
+          <div className="flex flex-wrap justify-center gap-1">
+        {caseCheckpoints.map(checkpoint=><p className={`border-2 px-4 py-2 ${checkpoint.border} ${checkpoint.background}`}>{checkpoint.checkpoint}</p>)}
           </div>
      
         </section>
@@ -84,26 +86,27 @@ function startNewGame(){
         {!isGameOver && randomWord.word.split("").map(letter=> <span className={`px-4 py-2 ${letter === " "? "":"border-b-2"}`}>{guessedLetters.includes(letter)? letter.toUpperCase(): " "}</span>)}
         {isGameOver && randomWord.word.split("").map(letter=> <span className={`px-4 py-2 ${letter === " "? "":"border-b-2"}`}><p className={!guessedLetters.includes(letter) && randomWord.word.includes(letter)? "text-red-500": ""}>{letter.toUpperCase()}</p></span>)}
         </div>
-        <p className="text-xl">{randomWord.definition}</p>
+        <p className="text-xl">Hint: {randomWord.definition}</p>
       </section>
  
     {/*Keyboard*/}
     <section className="flex flex-col justify-center items-center gap-8">
-      <div className="flex flex-row justify-center items-center flex-wrap">
+      <div className="flex flex-row justify-center items-center flex-wrap gap-1">
       {alphabet.split("").map(letter=>{
-        return <button className={clsx( "border-2 py-2 px-4", {"bg-green-500": randomWord.word.includes(letter) && guessedLetters.includes(letter), "bg-red-500": !randomWord.word.includes(letter) && guessedLetters.includes(letter)})} onClick={()=>guessLetter(letter)} disabled={isGameOver? true: false}>{letter.toUpperCase()}</button>
+        return <button className={clsx( "border-2 py-2 px-4", {"border-mist-500 bg-mist-50": !guessedLetters.includes(letter), "border-green-500 bg-green-50": randomWord.word.includes(letter) && guessedLetters.includes(letter), "border-red-500 bg-red-50": !randomWord.word.includes(letter) && guessedLetters.includes(letter)})} onClick={()=>guessLetter(letter)} disabled={isGameOver? true: false}>{letter.toUpperCase()}</button>
       })}
       </div>
-      {isGameOver && <button className="border px-4 py-2 rounded-lg" onClick={()=>startNewGame()}>Play Again</button>}
+      {isGameOver && <button className="border px-4 py-2 rounded-lg shadow-lg" onClick={()=>startNewGame()}>Play Again</button>}
     </section>
     </div>
    : 
     (isInitialScreenDisplayed && (<div className="flex flex-col justify-center items-center min-h-screen">
-      <h1 className="text-4xl mb-6">Lawyer Hangman</h1>
-      <h2 className="text-xl">Would you like to guess legal terms related to criminal law or civil law? </h2>
+       <FontAwesomeIcon icon={faGavel} size="5x"></FontAwesomeIcon>
+      <h1 className="text-4xl mb-6 mt-4 tracking-wide font-medium">Lawyer Hangman</h1>
+      <h2 className="text-xl tracking-wide">Would you like to guess legal terms related to criminal law or civil law? </h2>
       <div className="flex gap-4 pt-8">
-        <button className="border px-4 py-2 rounded-lg text-xl" onClick={()=>startGame(randomCriminalLawWord)}>Criminal Law 🚓</button>
-        <button className="border px-4 py-2 rounded-lg text-xl" onClick={()=>startGame(randomCivilLawWord)}>Civil Law 💰 </button>
+        <button className="border-2 border-blue-500 tracking-wide font-medium px-4 py-2 rounded-2xl text-xl shadow-lg hover:bg-blue-50 hover:font-semibold" onClick={()=>startGame(randomCriminalLawWord)}>Criminal Law 🚓</button>
+        <button className="border-2 border-green-600 tracking-wide font-medium px-4 py-2 rounded-2xl text-xl shadow-lg hover:bg-green-50 hover:font-semibold" onClick={()=>startGame(randomCivilLawWord)}>Civil Law 💰 </button>
       </div>
     </div>))}
 
