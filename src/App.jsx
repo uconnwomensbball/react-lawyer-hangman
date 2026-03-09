@@ -68,35 +68,36 @@ function startNewGame(){
   return (
      <div className="font-bzks bg-slate-50 flex flex-col items-center p-6 min-h-screen">
 
-    <main className="max-w-4xl flex-1">
+    <main className="md:max-w-3xl lg:max-w-4xl flex-1 max-w-sm">
     {gameStarted? 
       <div className="flex flex-col items-center justify-center">
-        <FontAwesomeIcon icon={faGavel} size="5x"></FontAwesomeIcon>
-         <h1 className="text-4xl mt-4">Lawyer Hangman</h1>
+        <FontAwesomeIcon icon={faGavel} size="1x"></FontAwesomeIcon>
+         <h1 className="text-md mt-2 md:text-4xl md:mt-4">Lawyer Hangman</h1>
           
-        <section className="flex flex-col items-center gap-8 mb-8 mt-6 text-xl">
+        <section className="flex flex-col items-center gap-4 md:gap-8 md:mb-8 md:mt-6 text-sm md:text-xl">
           <p>Guess the word before the jury returns its verdict</p>
           <div className="flex flex-wrap justify-center gap-1">
+          {/*Case Checkpoints*/}
         {caseCheckpoints.map(checkpoint=><p className={`border-2 px-4 py-2 ${checkpoint.border} ${checkpoint.background}`}>{checkpoint.checkpoint}</p>)}
           </div>
      
         </section>
-      <section className="flex flex-col justify-center items-center mb-8 gap-2">
-        <div className="flex flex-row gap-2 mb-6">
-        {!isGameOver && randomWord.word.split("").map(letter=> <span className={`px-4 py-2 ${letter === " "? "":"border-b-2"}`}>{guessedLetters.includes(letter)? letter.toUpperCase(): " "}</span>)}
+      <section className="flex flex-col justify-center items-center mb-2 md:mb-8 gap-2">
+        <div className="flex flex-row gap-2 md:mb-6 md:h-10 text-sm md:text-md">
+        {!isGameOver && randomWord.word.split("").map(letter=> <span className={`px-4 py-2 w-10 bold ${letter === " "? "":"border-b-2"}`}>{guessedLetters.includes(letter)? letter.toUpperCase(): " "}</span>)}
         {isGameOver && randomWord.word.split("").map(letter=> <span className={`px-4 py-2 ${letter === " "? "":"border-b-2"}`}><p className={!guessedLetters.includes(letter) && randomWord.word.includes(letter)? "text-red-500": ""}>{letter.toUpperCase()}</p></span>)}
         </div>
-        <p className="text-xl">Hint: {randomWord.definition}</p>
+        <p className="text-sm md:text-xl">Hint: {randomWord.definition}</p>
       </section>
  
     {/*Keyboard*/}
     <section className="flex flex-col justify-center items-center gap-8">
-      <div className="flex flex-row justify-center items-center flex-wrap gap-1">
+      <div className="flex flex-row justify-center items-center flex-wrap gap-1 text-sm md:text-md">
       {alphabet.split("").map(letter=>{
-        return <button className={clsx( "border-2 py-2 px-4", {"border-mist-500 bg-mist-50": !guessedLetters.includes(letter), "border-green-500 bg-green-50": randomWord.word.includes(letter) && guessedLetters.includes(letter), "border-red-500 bg-red-50": !randomWord.word.includes(letter) && guessedLetters.includes(letter)})} onClick={()=>guessLetter(letter)} disabled={isGameOver? true: false}>{letter.toUpperCase()}</button>
+        return <button className={clsx("border-2 py-2 px-4", {"border-mist-500 bg-mist-50 hover:font-bold hover:border-slate-900" : !guessedLetters.includes(letter), "border-green-500 bg-green-50": randomWord.word.includes(letter) && guessedLetters.includes(letter), "border-red-500 bg-red-50": !randomWord.word.includes(letter) && guessedLetters.includes(letter)})} onClick={()=>guessLetter(letter)} disabled={isGameOver? true: false}>{letter.toUpperCase()}</button>
       })}
       </div>
-      {isGameOver && <button className="border px-4 py-2 rounded-lg shadow-lg" onClick={()=>startNewGame()}>Play Again</button>}
+      {isGameOver && <button className="border px-4 py-2 rounded-lg shadow-lg hover:bg-blue-50 border-blue-500 border-2 hover:font-semibold" onClick={()=>startNewGame()}>PLAY AGAIN</button>}
     </section>
     </div>
    : 
@@ -111,7 +112,7 @@ function startNewGame(){
     </div>))}
 
     </main>
-    <footer className="flex justify-content items-center gap-1">
+    <footer className="flex justify-content items-center gap-1 text-sm md:text-md">
         <p>JDJD Codes</p>
         <FontAwesomeIcon icon={faScaleBalanced}></FontAwesomeIcon>
     </footer>
