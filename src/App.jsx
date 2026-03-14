@@ -11,14 +11,14 @@ function App() {
   const randomCriminalLawWord = criminalLawWords[randomNumber]
 
   const randomCivilLawWord = civilLawWords[randomNumber]
-
+console.log(randomCivilLawWord.word)
   const [randomWord, setRandomWord] = useState({word:"", description:""})
 console.log("randomWord", randomWord)
   const alphabet = "abcdefghijklmnopqrstuvwxyz"
   const [guessedLetters, setGuessedLetters] = useState([])
-  const [incorrectGuesses, setIncorrectGuesses] = useState(0)
+  const [incorrectGuesses, setIncorrectGuesses] = useState(1)
 
-  console.log("incorrectGuesses", incorrectGuesses)
+  
   const [isInitialScreenDisplayed, setIsInitialScreenDisplayed] = useState(true)
   const [isGameOver, setIsGameOver] = useState(false)
 
@@ -34,14 +34,12 @@ console.log("randomWord", randomWord)
           console.log(`${letter} is in the word!`)
       }
       else{
-        console.log(`${letter} is not in the word!`)
-      
+        console.log("incorrectGuesses", incorrectGuesses)
           setIncorrectGuesses(prevGuesses=>{
             if (prevGuesses < 7){
               return prevGuesses + 1
         }
         else if (prevGuesses === 7){
-          console.log("You lose!")
           setIsGameOver(true)
         }}
       )
@@ -52,6 +50,7 @@ console.log("randomWord", randomWord)
   const [gameStarted, setGameStarted] = useState(false)
 
   function startGame(word){
+    console.log("word", word)
     setIsInitialScreenDisplayed(false)
     setGameStarted(true)
     setRandomWord(word)
@@ -74,7 +73,7 @@ return (
 
     {gameStarted && (
       <div className="flex flex-col items-center justify-center">
-        <FontAwesomeIcon icon={faGavel} size="3x"></FontAwesomeIcon>
+        <FontAwesomeIcon icon={faGavel} className="text-2xl md:text-7xl"></FontAwesomeIcon>
         <h1 className="text-sm mt-2 mb-2 md:text-4xl md:mt-4">Lawyer Hangman</h1>
           
         <section className="flex flex-col items-center gap-4 md:gap-8 md:mb-8 md:mt-6 text-sm md:text-xl">
@@ -103,21 +102,22 @@ return (
     {/*Keyboard*/}
     <section className="flex flex-col justify-center items-center md:gap-8 md:mb-6">
       <div className="flex flex-row justify-center items-center flex-wrap gap-1 text-sm md:text-md">
-      {alphabet.split("").map(letter=>{
+      {!isGameOver && alphabet.split("").map(letter=>{
         return <button className={clsx("border-2 py-1 px-2 text-xs md:text-xl md:py-2 md:px-4", {"border-mist-500 bg-mist-50 hover:font-bold hover:border-slate-900" : !guessedLetters.includes(letter), "border-green-500 bg-green-50": randomWord.word.includes(letter) && guessedLetters.includes(letter), "border-red-500 bg-red-50": !randomWord.word.includes(letter) && guessedLetters.includes(letter)})} onClick={()=>guessLetter(letter)} disabled={isGameOver? true: false}>{letter.toUpperCase()}</button>
       })}
+      {isGameOver && <p className="text-xs md:text-xl">Judge: A verdict has been reached...your client is {civilLawWords.includes(randomWord)? "liable": "guilty"}!</p>}
       </div>
       {isGameOver && <button className="border text-xs md:text-lg px-2 py-1 mb-4 md:px-4 md:py-2 mt-4 rounded-lg shadow-lg hover:bg-blue-50 border-blue-500 border-2 hover:font-semibold" onClick={()=>startNewGame()}>PLAY AGAIN</button>}
     </section>
     </div>)}
     
     {!gameStarted && isInitialScreenDisplayed && (<div className="flex flex-col justify-center items-center min-h-screen">
-       <FontAwesomeIcon icon={faGavel} size="5x"></FontAwesomeIcon>
-      <h1 className="text-4xl mb-6 mt-4 tracking-wide font-medium">Lawyer Hangman</h1>
-      <h2 className="text-xl tracking-wide">Would you like to guess legal terms related to criminal law or civil law? </h2>
+       <FontAwesomeIcon icon={faGavel} className="text-3xl md:text-7xl"></FontAwesomeIcon>
+      <h1 className="md:text-4xl md:mb-6 mb-4 mt-4 tracking-wide font-medium">Lawyer Hangman</h1>
+      <h2 className="text-xs text-center md:text-xl tracking-wide">Would you like to guess legal terms related to criminal law or civil law? </h2>
       <div className="flex gap-4 pt-8">
-        <button className="border-2 border-blue-500 tracking-wide font-medium px-4 py-2 rounded-2xl text-xl shadow-lg hover:bg-blue-50 hover:font-semibold" onClick={()=>startGame(randomCriminalLawWord)}>Criminal Law 🚓</button>
-        <button className="border-2 border-green-600 tracking-wide font-medium px-4 py-2 rounded-2xl text-xl shadow-lg hover:bg-green-50 hover:font-semibold" onClick={()=>startGame(randomCivilLawWord)}>Civil Law 💰 </button>
+        <button className="text-xs px-2 border-2 border-blue-500 tracking-wide md:font-medium md:px-4 md:py-2 rounded-2xl text-xl shadow-lg hover:bg-blue-50 hover:font-semibold" onClick={()=>startGame(randomCriminalLawWord)}>Criminal Law 🚓</button>
+        <button className="text-xs px-2 border-2 border-green-600 tracking-wide font-medium px-4 py-2 rounded-2xl text-xl shadow-lg hover:bg-green-50 hover:font-semibold" onClick={()=>startGame(randomCivilLawWord)}>Civil Law 💰 </button>
       </div>
     </div>)}
 
