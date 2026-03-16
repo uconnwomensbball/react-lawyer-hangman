@@ -16,7 +16,7 @@ console.log(randomCivilLawWord.word)
 console.log("randomWord", randomWord)
   const alphabet = "abcdefghijklmnopqrstuvwxyz"
   const [guessedLetters, setGuessedLetters] = useState([])
-  const [incorrectGuesses, setIncorrectGuesses] = useState(1)
+  const [incorrectGuesses, setIncorrectGuesses] = useState(0)
 
   
   const [isInitialScreenDisplayed, setIsInitialScreenDisplayed] = useState(true)
@@ -116,8 +116,8 @@ return (
       <h1 className="md:text-4xl md:mb-6 mb-4 mt-4 tracking-wide font-medium">Lawyer Hangman</h1>
       <h2 className="text-xs text-center md:text-xl tracking-wide">Would you like to guess legal terms related to criminal law or civil law? </h2>
       <div className="flex gap-4 pt-8">
-        <button className="text-xs px-2 border-2 border-blue-500 tracking-wide md:font-medium md:px-4 md:py-2 rounded-2xl text-xl shadow-lg hover:bg-blue-50 hover:font-semibold" onClick={()=>startGame(randomCriminalLawWord)}>Criminal Law 🚓</button>
-        <button className="text-xs px-2 border-2 border-green-600 tracking-wide font-medium px-4 py-2 rounded-2xl text-xl shadow-lg hover:bg-green-50 hover:font-semibold" onClick={()=>startGame(randomCivilLawWord)}>Civil Law 💰 </button>
+        <button className="text-xs px-2 border-2 border-blue-500 tracking-wide md:font-medium md:px-4 md:py-2 rounded-2xl md:text-xl shadow-lg hover:bg-blue-50 hover:font-semibold" onClick={()=>startGame(randomCriminalLawWord)}>Criminal Law 🚓</button>
+        <button className="text-xs px-2 border-2 border-green-600 tracking-wide font-medium px-4 py-2 rounded-2xl md:text-xl shadow-lg hover:bg-green-50 hover:font-semibold" onClick={()=>startGame(randomCivilLawWord)}>Civil Law 💰 </button>
       </div>
     </div>)}
 
