@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import clsx from 'clsx'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {  faGavel, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
@@ -16,6 +16,18 @@ function App() {
   const [isInitialScreenDisplayed, setIsInitialScreenDisplayed] = useState(true)
   const [isGameOver, setIsGameOver] = useState(false)
 
+  const [announcementMessage, setAnnouncementMessage] = useState("")
+
+//useEffect - accessibility 
+useEffect(()=>{
+  let accessibleWord = randomWord.word.split("").map((letter)=>guessedLetters.includes(letter)? letter: "blank").join(" ")
+  if (guessedLetters.length > 0){
+  let lastLetter = guessedLetters[guessedLetters.length-1]
+  setAnnouncementMessage(randomWord.word.includes(lastLetter)? `${lastLetter} is in the word.${accessibleWord}`: `${lastLetter} is not in the word. You have ${7-incorrectGuesses} remaining. ${accessibleWord}`)
+  }
+}, [randomWord.word, guessedLetters, incorrectGuesses])
+
+
   //function - logic when user guesses a letter 
   function guessLetter(letter){
       setGuessedLetters(prevLetters=>{
@@ -24,7 +36,7 @@ function App() {
         }else{
           return prevLetters
         }})
-    
+ 
         setIncorrectGuesses(prevGuesses=>{
           if (!randomWord.word.includes(letter)){
           const nextGuesses = prevGuesses + 1
@@ -72,7 +84,6 @@ return (
       {/*Case Checkpoints*/}
       {caseCheckpoints.map((checkpoint, index) => (
         <div key={index} className={`border-2 text-xs px-2 py-1 sm:text-xl sm:px-4 sm:py-2 relative ${checkpoint.border} ${checkpoint.background}`}>
-          <p class="sr-only" aria-live="polite">{`You have ${7-incorrectGuesses} remaining.`}</p>
           <p className={index < incorrectGuesses ? "opacity-30" : ""}>{checkpoint.checkpoint}</p>
           {index < incorrectGuesses && <span className="absolute inset-0 flex items-center justify-center">
             <FontAwesomeIcon icon={faGavel} size="1x" aria-hidden="true"/>
@@ -85,12 +96,12 @@ return (
         <div className="flex flex-row gap-2 mt-2 sm:mb-6 sm:h-10 text-xs sm:text-sm flex-wrap justify-center">
         {!isGameOver && randomWord.word.split("").map((letter, index)=>
         <>
-          <p id="announcer" class="sr-only" aria-live="polite">{randomWord.word.includes(letter)? `${letter} is in the word!`:`${letter} is not in the word`}</p>
-            <span key={index} className={`px-2 py-1 sm:px-4 sm:py-2 w-10 bold sm:text-xl ${letter === " "? "":"border-b-2"}`} tabindex={0}>
+            <span key={index} className={`px-2 py-1 sm:px-4 sm:py-2 w-10 bold sm:text-xl ${letter === " "? "":"border-b-2"}`}>
 
               {guessedLetters.includes(letter)? letter.toUpperCase(): " "}
               </span>
            </>)}
+           <p id="announcer" className="sr-only" aria-live="polite">{announcementMessage}</p>
         {isGameOver && randomWord.word.split("").map((letter, index)=>
             <span key={index} className={`px-2 py-1 sm:px-4 sm:py-2 sm:text-xl ${letter === " "? "":"border-b-2"}`}>
               <p className={!guessedLetters.includes(letter) && randomWord.word.includes(letter)? "text-red-500": ""}>
@@ -110,7 +121,7 @@ return (
         return <button key={letter} 
                       className={clsx("border-2 py-1 px-2 text-xs sm:text-xl sm:py-2 sm:px-4", {"border-mist-500 bg-mist-50 hover:font-bold hover:border-slate-900" : !guessedLetters.includes(letter), "border-green-500 bg-green-50": randomWord.word.includes(letter) && guessedLetters.includes(letter), "border-red-500 bg-red-50": !randomWord.word.includes(letter) && guessedLetters.includes(letter)})} onClick={()=>guessLetter(letter)} 
                       disabled={guessedLetters.includes(letter) || isGameOver? true: false} 
-                      aria-label={`letter ${letter}`}>{letter.toUpperCase()}</button>
+                      >{letter.toUpperCase()}</button>
       })}
       {isGameOver && <p className="text-xs sm:text-xl" aria-live="polite">Judge: A verdict has been reached...your client is {civilLawWords.includes(randomWord)? "liable": "guilty"}!</p>}
       </div>
