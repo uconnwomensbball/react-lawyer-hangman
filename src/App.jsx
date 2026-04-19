@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import clsx from 'clsx'
+import Confetti from "react-confetti"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {  faGavel, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
 import { criminalLawWords, civilLawWords, caseCheckpoints } from "./data.js"
@@ -14,9 +15,30 @@ function App() {
   const [incorrectGuesses, setIncorrectGuesses] = useState(0)
   
   const [isInitialScreenDisplayed, setIsInitialScreenDisplayed] = useState(true)
+  const [hint, setHint] = useState(false)
   const [isGameOver, setIsGameOver] = useState(false)
-
+  const [isGameLost, setIsGameLost] = useState(false)
+ 
+  const gameWon = guessedLetters.length !== 0 && randomWord.word.split("").every(letter=>guessedLetters.includes(letter))
+  console.log("guessedLettersLength", guessedLetters.length)
+  console.log("gameWon", gameWon)
   const [announcementMessage, setAnnouncementMessage] = useState("")
+ //*TODO* fix verdict logic below--simplify! 
+  let verdict = ""
+  useEffect(()=>{
+ 
+  if (gameWon && civilLawWords.includes(randomWord)){
+    verdict = "not liable"}
+  else if (gameWon && !civilLawWords.includes(randomWord)){
+    verdict = "not guilty"}
+  if (!gameWon && civilLawWords.includes(randomWord)){
+    verdict = "liable"}
+  else if (!gameWon && !civilLawWords.includes(randomWord)){
+    verdict = "guilty"}
+
+  }, [isGameOver], [gameWon])
+
+
 
 //useEffect - accessibility 
 useEffect(()=>{
@@ -41,12 +63,17 @@ useEffect(()=>{
           if (!randomWord.word.includes(letter)){
           const nextGuesses = prevGuesses + 1
           if (nextGuesses === 7){
+            isGameLost(true)
             setIsGameOver(true)}
           return nextGuesses}
-        else{
+          else{
           return prevGuesses
         }}) 
+
   }
+console.log("isGameOVer", isGameOver)
+
+
 
   const [gameStarted, setGameStarted] = useState(false)
 
@@ -66,21 +93,30 @@ function startNewGame(){
     setGuessedLetters([])
 }
 
+function showHint(){
+  setHint(prevVal=>!prevVal)
+}
+
+useEffect(()=>{
+        if (gameWon){
+      setIsGameOver(true)
+     }
+}, [gameWon])
+
 return (
   <div className="font-bzks bg-slate-50 flex flex-col items-center p-6 min-h-screen">
-    
+    {gameWon && <Confetti/>}
     {/*MAIN*/}
     <main className="sm:max-w-3xl lg:max-w-4xl flex-1 max-w-sm max-w-screen-lg">
-
+   
     {gameStarted && (
       <div className="flex flex-col items-center justify-center">
         <FontAwesomeIcon icon={faGavel} className="text-2xl sm:text-7xl"></FontAwesomeIcon>
         <h1 className="text-sm mt-2 mb-2 sm:text-4xl sm:mt-4">Lawyer Hangman</h1>
-          
         <section className="flex flex-col items-center gap-4 sm:gap-8 sm:mb-8 sm:mt-6 text-sm sm:text-xl">
           <p className="text-center text-xs sm:text-xl">Guess the word before the jury returns its verdict</p>
-
       <div className="flex flex-wrap justify-center gap-1">
+
       {/*Case Checkpoints*/}
       {caseCheckpoints.map((checkpoint, index) => (
         <div key={index} className={`border-2 text-xs px-2 py-1 sm:text-xl sm:px-4 sm:py-2 relative ${checkpoint.border} ${checkpoint.background}`}>
@@ -96,7 +132,7 @@ return (
         <div className="flex flex-row gap-2 mt-2 sm:mb-6 sm:h-10 text-xs sm:text-sm flex-wrap justify-center">
         {!isGameOver && randomWord.word.split("").map((letter, index)=>
         <>
-            <span key={index} className={`px-2 py-1 sm:px-4 sm:py-2 w-10 bold sm:text-xl ${letter === " "? "":"border-b-2"}`}>
+            <span key={index} className={`px-2 py-1 sm:px-4 sm:py-2 bold sm:text-xl ${letter === " "? "":"border-b-2"}`}>
 
               {guessedLetters.includes(letter)? letter.toUpperCase(): " "}
               </span>
@@ -110,7 +146,11 @@ return (
               <p class = "sr-only" aria-live="polite">{`The word was ${randomWord.word}.`}</p>
               </span>)}
         </div>
-        <p className="sm:text-xl mt-4 text-center text-xs mb-2">Hint: {randomWord.hint}</p>
+        
+        <div>
+          {!hint? <button className="text-xs px-2 border-2 border-green-500 tracking-wide sm:font-medium sm:px-4 sm:py-2 rounded-2xl sm:text-xl shadow-lg hover:bg-green-50 hover:font-semibold" onClick={showHint}>Show Hint?</button>:
+          <p className="sm:text-xl mt-4 text-center text-xs mb-2 "> Hint: {randomWord.hint}</p>}
+        </div>
         
       </section>
  
@@ -123,7 +163,7 @@ return (
                       disabled={guessedLetters.includes(letter) || isGameOver? true: false} 
                       >{letter.toUpperCase()}</button>
       })}
-      {isGameOver && <p className="text-xs sm:text-xl" aria-live="polite">Judge: A verdict has been reached...your client is {civilLawWords.includes(randomWord)? "liable": "guilty"}!</p>}
+      {isGameOver && <p className="text-xs sm:text-xl" aria-live="polite">Judge: A verdict has been reached...your client is {verdict}!</p>}
       </div>
       {isGameOver && <button className="border text-xs sm:text-lg px-2 py-1 mb-4 sm:px-4 sm:py-2 mt-4 rounded-lg shadow-lg hover:bg-blue-50 border-blue-500 border-2 hover:font-semibold" onClick={()=>startNewGame()}>PLAY AGAIN</button>}
     </section>
