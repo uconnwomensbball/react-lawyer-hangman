@@ -13,32 +13,25 @@ function App() {
   const alphabet = "abcdefghijklmnopqrstuvwxyz"
   const [guessedLetters, setGuessedLetters] = useState([])
   const [incorrectGuesses, setIncorrectGuesses] = useState(0)
-  
   const [isInitialScreenDisplayed, setIsInitialScreenDisplayed] = useState(true)
+  const [gameStarted, setGameStarted] = useState(false)
   const [hint, setHint] = useState(false)
   const [isGameOver, setIsGameOver] = useState(false)
-  const [isGameLost, setIsGameLost] = useState(false)
  
   const gameWon = guessedLetters.length !== 0 && randomWord.word.split("").every(letter=>guessedLetters.includes(letter))
-  console.log("guessedLettersLength", guessedLetters.length)
-  console.log("gameWon", gameWon)
+
   const [announcementMessage, setAnnouncementMessage] = useState("")
- //*TODO* fix verdict logic below--simplify! 
+
+ //Verdict logic 
   let verdict = ""
-  useEffect(()=>{
- 
   if (gameWon && civilLawWords.includes(randomWord)){
-    verdict = "not liable"}
+    verdict = "NOT LIABLE"}
   else if (gameWon && !civilLawWords.includes(randomWord)){
-    verdict = "not guilty"}
+    verdict = "NOT GUILTY"}
   if (!gameWon && civilLawWords.includes(randomWord)){
-    verdict = "liable"}
+    verdict = "LIABLE"}
   else if (!gameWon && !civilLawWords.includes(randomWord)){
-    verdict = "guilty"}
-
-  }, [isGameOver], [gameWon])
-
-
+    verdict = "GUILTY"}
 
 //useEffect - accessibility 
 useEffect(()=>{
@@ -50,42 +43,35 @@ useEffect(()=>{
 }, [randomWord.word, guessedLetters, incorrectGuesses])
 
 
-  //function - logic when user guesses a letter 
+//function - logic when user guesses a letter 
   function guessLetter(letter){
-      setGuessedLetters(prevLetters=>{
-        if (!prevLetters.includes(letter)){
-          return [...prevLetters, letter]
-        }else{
-          return prevLetters
-        }})
+    setGuessedLetters(prevLetters=>{
+      if (!prevLetters.includes(letter)){
+        return [...prevLetters, letter]
+      }else{
+        return prevLetters}})
  
-        setIncorrectGuesses(prevGuesses=>{
-          if (!randomWord.word.includes(letter)){
-          const nextGuesses = prevGuesses + 1
-          if (nextGuesses === 7){
-            isGameLost(true)
-            setIsGameOver(true)}
-          return nextGuesses}
-          else{
-          return prevGuesses
-        }}) 
-
+    setIncorrectGuesses(prevGuesses=>{
+      if (!randomWord.word.includes(letter)){
+        const nextGuesses = prevGuesses + 1
+      if (nextGuesses === 7){
+        setIsGameOver(true)}
+        return nextGuesses}
+      else{
+        return prevGuesses}})
   }
-console.log("isGameOVer", isGameOver)
 
-
-
-  const [gameStarted, setGameStarted] = useState(false)
-
-  function startGame(word){
- 
+//function - game start logic 
+function startGame(word){
     setIsInitialScreenDisplayed(false)
     setGameStarted(true)
     setRandomWord(word)
   }
 
+//function - start new game logic 
 function startNewGame(){
     setIsInitialScreenDisplayed(true)
+    setHint(false)
     setGameStarted(false)
     setIsGameOver(false)
     setRandomWord({word:"", hint:""})
@@ -93,14 +79,15 @@ function startNewGame(){
     setGuessedLetters([])
 }
 
+//function - show user hint logic 
 function showHint(){
   setHint(prevVal=>!prevVal)
 }
 
+//useEffect - determines if game has been won
 useEffect(()=>{
-        if (gameWon){
-      setIsGameOver(true)
-     }
+  if (gameWon){
+    setIsGameOver(true)}
 }, [gameWon])
 
 return (
@@ -128,6 +115,7 @@ return (
       </div>
         </section>
 
+      {/*Displayed Letters*/}
         <section className="flex flex-col justify-center items-center mb-2 sm:mb-8 gap-2 mt-4 md:mt-0">
         <div className="flex flex-row gap-2 mt-2 sm:mb-6 sm:h-10 text-xs sm:text-sm flex-wrap justify-center">
         {!isGameOver && randomWord.word.split("").map((letter, index)=>
@@ -136,15 +124,16 @@ return (
 
               {guessedLetters.includes(letter)? letter.toUpperCase(): " "}
               </span>
-           </>)}
-           <p id="announcer" className="sr-only" aria-live="polite">{announcementMessage}</p>
+        </>)}
+           <p id="announcer" className="sr-only" aria-live="polite">{!isGameOver && announcementMessage}</p>
         {isGameOver && randomWord.word.split("").map((letter, index)=>
             <span key={index} className={`px-2 py-1 sm:px-4 sm:py-2 sm:text-xl ${letter === " "? "":"border-b-2"}`}>
               <p className={!guessedLetters.includes(letter) && randomWord.word.includes(letter)? "text-red-500": ""}>
                 {letter.toUpperCase()}
               </p>
-              <p class = "sr-only" aria-live="polite">{`The word was ${randomWord.word}.`}</p>
+              
               </span>)}
+          
         </div>
         
         <div>
@@ -163,7 +152,8 @@ return (
                       disabled={guessedLetters.includes(letter) || isGameOver? true: false} 
                       >{letter.toUpperCase()}</button>
       })}
-      {isGameOver && <p className="text-xs sm:text-xl" aria-live="polite">Judge: A verdict has been reached...your client is {verdict}!</p>}
+      {isGameOver && <p className = "sr-only" aria-live="assertive">Game over. The word was {randomWord.word}. A verdict has been reached...your client is {verdict}!</p>}
+      {isGameOver && <p className="text-xs sm:text-xl">Judge: A verdict has been reached...your client is {verdict}!</p>}
       </div>
       {isGameOver && <button className="border text-xs sm:text-lg px-2 py-1 mb-4 sm:px-4 sm:py-2 mt-4 rounded-lg shadow-lg hover:bg-blue-50 border-blue-500 border-2 hover:font-semibold" onClick={()=>startNewGame()}>PLAY AGAIN</button>}
     </section>
