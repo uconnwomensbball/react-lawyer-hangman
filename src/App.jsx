@@ -99,7 +99,7 @@ return (
     {gameStarted && (
       <div className="flex flex-col items-center justify-center">
         <FontAwesomeIcon icon={faGavel} className="text-2xl sm:text-7xl"></FontAwesomeIcon>
-        <h1 className="text-sm mt-2 mb-2 sm:text-4xl sm:mt-4">Lawyer Hangman</h1>
+        <h1 className="text-sm mt-2 mb-2 sm:text-4xl sm:mt-4 text-center">Lawyer Hangman</h1>
         <section className="flex flex-col items-center gap-4 sm:gap-8 sm:mb-8 sm:mt-6 text-sm sm:text-xl">
           <p className="text-center text-xs sm:text-xl">Guess the word before the jury returns its verdict</p>
       <div className="flex flex-wrap justify-center gap-1">
@@ -153,7 +153,7 @@ return (
                       >{letter.toUpperCase()}</button>
       })}
       {isGameOver && <p className = "sr-only" aria-live="assertive">Game over. The word was {randomWord.word}. A verdict has been reached...your client is {verdict}!</p>}
-      {isGameOver && <p className="text-xs sm:text-xl">Judge: A verdict has been reached...your client is {verdict}!</p>}
+      {isGameOver && <p className="text-xs sm:text-xl text-center">Judge: A verdict has been reached...your client is {verdict}!</p>}
       </div>
       {isGameOver && <button className="border text-xs sm:text-lg px-2 py-1 mb-4 sm:px-4 sm:py-2 mt-4 rounded-lg shadow-lg hover:bg-blue-50 border-blue-500 border-2 hover:font-semibold" onClick={()=>startNewGame()}>PLAY AGAIN</button>}
     </section>
@@ -161,7 +161,7 @@ return (
     
     {!gameStarted && isInitialScreenDisplayed && (<div className="flex flex-col justify-center items-center min-h-screen">
        <FontAwesomeIcon icon={faGavel} className="text-3xl sm:text-7xl" aria-hidden="true"></FontAwesomeIcon>
-      <h1 className="sm:text-4xl sm:mb-6 mb-4 mt-4 tracking-wide font-medium">Lawyer Hangman</h1>
+      <h1 className="font-medium sm:text-4xl font-semibold sm:font-medium sm:mb-6 mb-4 mt-4 tracking-wide">Lawyer Hangman</h1>
       <h2 className="text-xs text-center sm:text-xl tracking-wide" aria-live="polite">Would you like to guess legal terms related to criminal law or civil law? </h2>
       <div className="flex gap-4 pt-8">
         <button className="text-xs px-2 border-2 border-blue-500 tracking-wide sm:font-medium sm:px-4 sm:py-2 rounded-2xl sm:text-xl shadow-lg hover:bg-blue-50 hover:font-semibold" onClick={()=>startGame(criminalLawWords[randomNumber])}>Criminal Law 🚓</button>
@@ -171,7 +171,7 @@ return (
 
     </main>
 
-    <footer className="flex justify-content items-center gap-1 text-sm sm:text-sm">
+    <footer className="flex justify-content items-center gap-1 text-sm mt-4">
         <p className= "text-xs sm:text-xl">JDJD Codes</p>
         <FontAwesomeIcon icon={faScaleBalanced} size="lg" aria-hidden="true"></FontAwesomeIcon>
     </footer>
