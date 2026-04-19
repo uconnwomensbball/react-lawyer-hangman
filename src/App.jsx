@@ -99,7 +99,7 @@ return (
     {gameStarted && (
       <div className="flex flex-col items-center justify-center">
         <FontAwesomeIcon icon={faGavel} className="text-2xl sm:text-7xl"></FontAwesomeIcon>
-        <h1 className="text-sm mt-2 mb-2 sm:text-4xl sm:mt-4 text-center">Lawyer Hangman</h1>
+        <h1 className="text-sm mt-2 mb-2 sm:text-4xl sm:mt-4 text-center font-semibold sm:font-medium">Lawyer Hangman</h1>
         <section className="flex flex-col items-center gap-4 sm:gap-8 sm:mb-8 sm:mt-6 text-sm sm:text-xl">
           <p className="text-center text-xs sm:text-xl">Guess the word before the jury returns its verdict</p>
       <div className="flex flex-wrap justify-center gap-1">
@@ -137,7 +137,7 @@ return (
         </div>
         
         <div>
-          {!hint? <button className="text-xs px-2 border-2 border-green-500 tracking-wide sm:font-medium sm:px-4 sm:py-2 rounded-2xl sm:text-xl shadow-lg hover:bg-green-50 hover:font-semibold" onClick={showHint}>Show Hint?</button>:
+          {!hint? <button className="text-xs px-2 border-2 border-green-500 tracking-wide sm:font-medium sm:px-4 sm:py-2 mt-2 mb-2 rounded-2xl sm:text-xl shadow-lg hover:bg-green-50 hover:font-semibold" onClick={showHint}>Show Hint?</button>:
           <p className="sm:text-xl mt-4 text-center text-xs mb-2 "> Hint: {randomWord.hint}</p>}
         </div>
         
@@ -153,7 +153,7 @@ return (
                       >{letter.toUpperCase()}</button>
       })}
       {isGameOver && <p className = "sr-only" aria-live="assertive">Game over. The word was {randomWord.word}. A verdict has been reached...your client is {verdict}!</p>}
-      {isGameOver && <p className="text-xs sm:text-xl text-center">Judge: A verdict has been reached...your client is {verdict}!</p>}
+      {isGameOver && <p className="text-xs sm:text-xl text-center">Judge: A verdict has been reached...your client is <span className="opacity-0 animate-fade-in">{verdict}!</span></p>}
       </div>
       {isGameOver && <button className="border text-xs sm:text-lg px-2 py-1 mb-4 sm:px-4 sm:py-2 mt-4 rounded-lg shadow-lg hover:bg-blue-50 border-blue-500 border-2 hover:font-semibold" onClick={()=>startNewGame()}>PLAY AGAIN</button>}
     </section>
