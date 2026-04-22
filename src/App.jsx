@@ -69,7 +69,7 @@ useEffect(()=>{
     }else if (isCorrectGuess){
        message = `${letter} is in the word. ${accessibleWord}`
     }else{
-      message = `${letter} is not in the word. You have ${7-nextIncorrectGuesses} remaining. ${accessibleWord}`
+      message = `${letter} is not in the word. You have ${7-nextIncorrectGuesses} guesses remaining. ${accessibleWord}`
     }
       setAnnouncementMessage(message) 
   }
@@ -102,9 +102,8 @@ useEffect(()=>{
   if (gameWon){
     setIsGameOver(true)
     setAnnouncementMessage(`Game over. You correctly guessed the word. The word was ${randomWord.word}. A verdict has been reached...your client is ${verdict}!`)
-  
   }
-}, [gameWon])
+}, [gameWon, verdict, randomWord.word])
 
 return (
   <div className="font-bzks bg-slate-50 flex flex-col items-center p-6 min-h-screen">
@@ -117,7 +116,7 @@ return (
         <FontAwesomeIcon icon={faGavel} className="text-2xl sm:text-7xl"></FontAwesomeIcon>
         <h1 className="text-sm mt-2 mb-2 sm:text-4xl sm:mt-4 text-center font-semibold sm:font-medium">Lawyer Hangman</h1>
         <section className="flex flex-col items-center gap-4 sm:gap-8 sm:mb-8 sm:mt-6 text-sm sm:text-xl">
-          <p className="text-center text-xs sm:text-xl">Guess the word before the jury returns its verdict</p>
+          <p className="text-center text-xs sm:text-xl" aria-live="polite">Guess the word before the jury returns its verdict</p>
       <div className="flex flex-wrap justify-center gap-1">
 
       {/*Case Checkpoints*/}
