@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import clsx from 'clsx'
 import Confetti from "react-confetti"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -20,7 +20,24 @@ function App() {
  
   const gameWon = guessedLetters.length !== 0 && randomWord.word.split("").every(letter=>guessedLetters.includes(letter))
 
+//accessibility 
+//announcement variable
   const [announcementMessage, setAnnouncementMessage] = useState("")
+//refs 
+  const firstKeyRef = useRef(null)
+  const playAgainRef = useRef(null)
+
+useEffect(()=>{
+  if (gameStarted && !isGameOver){
+    firstKeyRef.current?.focus()
+  }
+}, [gameStarted, isGameOver])
+
+useEffect(()=>{
+  if (isGameOver){
+    playAgainRef.current?.focus()
+  }
+}, [isGameOver])
 
  //Verdict logic 
   let verdict = ""
@@ -33,32 +50,28 @@ function App() {
   else if (!gameWon && !civilLawWords.includes(randomWord)){
     verdict = "GUILTY"}
 
-//useEffect - accessibility 
-useEffect(()=>{
-  let accessibleWord = randomWord.word.split("").map((letter)=>guessedLetters.includes(letter)? letter: "blank").join(" ")
-  if (guessedLetters.length > 0){
-  let lastLetter = guessedLetters[guessedLetters.length-1]
-  setAnnouncementMessage(randomWord.word.includes(lastLetter)? `${lastLetter} is in the word.${accessibleWord}`: `${lastLetter} is not in the word. You have ${7-incorrectGuesses} remaining. ${accessibleWord}`)
-  }
-}, [randomWord.word, guessedLetters, incorrectGuesses])
-
 
 //function - logic when user guesses a letter 
   function guessLetter(letter){
-    setGuessedLetters(prevLetters=>{
-      if (!prevLetters.includes(letter)){
-        return [...prevLetters, letter]
-      }else{
-        return prevLetters}})
- 
-    setIncorrectGuesses(prevGuesses=>{
-      if (!randomWord.word.includes(letter)){
-        const nextGuesses = prevGuesses + 1
-      if (nextGuesses === 7){
-        setIsGameOver(true)}
-        return nextGuesses}
-      else{
-        return prevGuesses}})
+    const isCorrectGuess = randomWord.word.includes(letter)
+    const nextGuessedLetters = guessedLetters.includes(letter)? guessedLetters: [...guessedLetters, letter]
+    const nextIncorrectGuesses = isCorrectGuess? incorrectGuesses: incorrectGuesses + 1
+    let accessibleWord = randomWord.word.split("").map((letter)=>nextGuessedLetters.includes(letter)? letter: "blank").join(" ")
+    const finalWrongGuess = nextIncorrectGuesses === 7
+
+    setGuessedLetters(nextGuessedLetters)
+    setIncorrectGuesses(nextIncorrectGuesses)
+    
+    let message 
+    if (finalWrongGuess){
+      setIsGameOver(true)
+      message = `Game over. The word was ${randomWord.word}. A verdict has been reached...your client is ${verdict}!`
+    }else if (isCorrectGuess){
+       message = `${letter} is in the word. ${accessibleWord}`
+    }else{
+      message = `${letter} is not in the word. You have ${7-nextIncorrectGuesses} remaining. ${accessibleWord}`
+    }
+      setAnnouncementMessage(message) 
   }
 
 //function - game start logic 
@@ -87,7 +100,10 @@ function showHint(){
 //useEffect - determines if game has been won
 useEffect(()=>{
   if (gameWon){
-    setIsGameOver(true)}
+    setIsGameOver(true)
+    setAnnouncementMessage(`Game over. You correctly guessed the word. The word was ${randomWord.word}. A verdict has been reached...your client is ${verdict}!`)
+  
+  }
 }, [gameWon])
 
 return (
@@ -136,26 +152,27 @@ return (
           
         </div>
         
-        <div>
-          {!hint? <button className="text-xs px-2 border-2 border-green-500 tracking-wide sm:font-medium sm:px-4 sm:py-2 mt-2 mb-2 rounded-2xl sm:text-xl shadow-lg hover:bg-green-50 hover:font-semibold" onClick={showHint}>Show Hint?</button>:
-          <p className="sm:text-xl mt-4 text-center text-xs mb-2 "> Hint: {randomWord.hint}</p>}
+        <div className="sm:min-h-[65px] min-h-[50px] flex items-center justify-center mt-2">
+          {!hint? <button className="text-xs px-2 border-2 border-green-500 sm:font-medium sm:px-4 sm:py-2 rounded-2xl sm:text-xl shadow-lg hover:bg-green-50 hover:font-semibold" onClick={showHint}>Show Hint?</button>:
+          <p className="sm:text-xl text-center text-xs"> Hint: {randomWord.hint}</p>}
         </div>
         
       </section>
  
     {/*Keyboard*/}
-    <section className="flex flex-col justify-center items-center sm:gap-8 sm:mb-6">
+    <section className="flex flex-col justify-center items-center sm:mb-6">
       <div className="flex flex-row justify-center items-center flex-wrap gap-1 text-sm sm:text-sm">
       {!isGameOver && alphabet.split("").map(letter=>{
         return <button key={letter} 
                       className={clsx("border-2 py-1 px-2 text-xs sm:text-xl sm:py-2 sm:px-4", {"border-mist-500 bg-mist-50 hover:font-bold hover:border-slate-900" : !guessedLetters.includes(letter), "border-green-500 bg-green-50": randomWord.word.includes(letter) && guessedLetters.includes(letter), "border-red-500 bg-red-50": !randomWord.word.includes(letter) && guessedLetters.includes(letter)})} onClick={()=>guessLetter(letter)} 
                       disabled={guessedLetters.includes(letter) || isGameOver? true: false} 
+                      ref={letter === "A"? firstKeyRef: null}
                       >{letter.toUpperCase()}</button>
       })}
-      {isGameOver && <p className = "sr-only" aria-live="assertive">Game over. The word was {randomWord.word}. A verdict has been reached...your client is {verdict}!</p>}
-      {isGameOver && <p className="text-xs sm:text-xl text-center">Judge: A verdict has been reached...your client is <span className="opacity-0 animate-fade-in">{verdict}!</span></p>}
+      {isGameOver && <p className = "sr-only" aria-live={isGameOver? "assertive": "polite"}>{announcementMessage}</p>}
+      {isGameOver && <p className="text-xs sm:text-xl text-center">Judge: A verdict has been reached...your client is... <span className="opacity-0 animate-fade-in">{verdict}!</span></p>}
       </div>
-      {isGameOver && <button className="border text-xs sm:text-lg px-2 py-1 mb-4 sm:px-4 sm:py-2 mt-4 rounded-lg shadow-lg hover:bg-blue-50 border-blue-500 border-2 hover:font-semibold" onClick={()=>startNewGame()}>PLAY AGAIN</button>}
+      {isGameOver && <button className="border text-xs sm:text-lg px-2 py-1 mb-4 sm:px-4 sm:py-2 mt-4 rounded-lg shadow-lg hover:bg-blue-50 border-blue-500 border-2 hover:font-semibold" onClick={()=>startNewGame()} ref={playAgainRef}>PLAY AGAIN</button>}
     </section>
     </div>)}
     
