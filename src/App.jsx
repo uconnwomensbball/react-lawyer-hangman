@@ -74,7 +74,7 @@ useEffect(()=>{
     let message 
     if (finalWrongGuess){
       setIsGameOver(true)
-      message = `Game over. The word was ${randomWord.word}. A verdict has been reached...your client is ${verdict}!`
+      message = `Game over. The word was ${randomWord.word}. A verdict has been reached and your client is ${verdict}!`
     }else if (isCorrectGuess){
        message = `${letter} is in the word. ${accessibleWord}`
     }else{
