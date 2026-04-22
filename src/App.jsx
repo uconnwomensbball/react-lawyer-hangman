@@ -149,7 +149,7 @@ return (
               {guessedLetters.includes(letter)? letter.toUpperCase(): " "}
               </span>
         </>)}
-           <p id="announcer" className="sr-only" aria-live="polite">{!isGameOver && announcementMessage}</p>
+           {!isGameOver && <p id="announcer" className="sr-only" aria-live="polite">{announcementMessage}</p>}
         {isGameOver && randomWord.word.split("").map((letter, index)=>
             <span key={index} className={`px-2 py-1 sm:px-4 sm:py-2 sm:text-xl ${letter === " "? "":"border-b-2"}`}>
               <p className={!guessedLetters.includes(letter) && randomWord.word.includes(letter)? "text-red-500": ""}>
