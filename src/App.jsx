@@ -26,10 +26,19 @@ function App() {
 //refs 
   const firstKeyRef = useRef(null)
   const playAgainRef = useRef(null)
+  const instructionRef = useRef(null)
 
 useEffect(()=>{
-  if (gameStarted && !isGameOver){
-    firstKeyRef.current?.focus()
+  if (!gameStarted) return;
+
+  if (!isGameOver) {
+    // Announce page context
+    instructionRef.current?.focus()
+
+    // Move focus to keyboard AFTER a beat
+    requestAnimationFrame(() => {
+      firstKeyRef.current?.focus()
+    })
   }
 }, [gameStarted, isGameOver])
 
@@ -116,7 +125,7 @@ return (
         <FontAwesomeIcon icon={faGavel} className="text-2xl sm:text-7xl"></FontAwesomeIcon>
         <h1 className="text-sm mt-2 mb-2 sm:text-4xl sm:mt-4 text-center font-semibold sm:font-medium">Lawyer Hangman</h1>
         <section className="flex flex-col items-center gap-4 sm:gap-8 sm:mb-8 sm:mt-6 text-sm sm:text-xl">
-          <p className="text-center text-xs sm:text-xl" aria-live="polite">Guess the word before the jury returns its verdict</p>
+          <p className="text-center text-xs sm:text-xl" ref={instructionRef} tabIndex={-1}>Guess the word before the jury returns its verdict</p>
       <div className="flex flex-wrap justify-center gap-1">
 
       {/*Case Checkpoints*/}
