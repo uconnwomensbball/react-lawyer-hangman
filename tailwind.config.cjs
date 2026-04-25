@@ -18,7 +18,7 @@ module.exports = {
       },
       animation: {
         'verdict': 'fadeIn 3s ease-in forwards',
-        'playagain': 'fadeIn 3s ease-in 3s forwards',
+        'playagain': 'fadeIn 3s ease-in 2s forwards',
       },
     },
   },

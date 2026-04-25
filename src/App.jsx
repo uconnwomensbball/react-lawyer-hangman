@@ -17,32 +17,32 @@ function App() {
   const [gameStarted, setGameStarted] = useState(false)
   const [hint, setHint] = useState(false)
   const [isGameOver, setIsGameOver] = useState(false)
- 
   const gameWon = guessedLetters.length !== 0 && randomWord.word.split("").every(letter=>guessedLetters.includes(letter))
-  const [playAgnBtnIsShown, setPlayAgnBtnIsShown] = useState(false)
 
-//accessibility 
-//announcement variable
+
+//announcement variable (accessibility) 
   const [announcementMessage, setAnnouncementMessage] = useState("")
-//refs 
+
+//refs (accessibility) 
   const firstKeyRef = useRef(null)
   const playAgainRef = useRef(null)
   const instructionRef = useRef(null)
 
+//useEffect (accessibility) - if game is not over, focuses to instructions so it is read, then after a short delay, moves focus to keyboard 
 useEffect(()=>{
   if (!gameStarted) return;
 
   if (!isGameOver) {
-    // Announce page context
+  
     instructionRef.current?.focus()
 
-    // Move focus to keyboard AFTER a beat
     requestAnimationFrame(() => {
       firstKeyRef.current?.focus()
     })
   }
 }, [gameStarted, isGameOver])
 
+//useEffect (accessibility) - if game is over, focuses to playAgainBtn
 useEffect(()=>{
   if (isGameOver){
     playAgainRef.current?.focus()
@@ -59,7 +59,6 @@ useEffect(()=>{
     verdict = "LIABLE"}
   else if (!gameWon && !civilLawWords.includes(randomWord)){
     verdict = "GUILTY"}
-
 
 //function - logic when user guesses a letter 
   function guessLetter(letter){
@@ -162,7 +161,7 @@ return (
         </div>
         
         <div className="sm:min-h-[65px] min-h-[50px] flex items-center justify-center mt-2">
-          {!hint? <button className="text-xs px-2 border-2 border-green-500 sm:font-medium sm:px-4 sm:py-2 rounded-2xl sm:text-xl shadow-lg hover:bg-green-50 hover:font-semibold" onClick={showHint}>Show Hint?</button>:
+          {!hint? <button className="text-xs px-2 border-2 border-green-500 sm:font-medium sm:px-4 sm:py-2 rounded-2xl sm:text-xl shadow-lg hover:bg-green-50 hover:font-semibold tracking-wide" onClick={showHint}>Show Hint?</button>:
           <p className="sm:text-xl text-center text-xs"> Hint: {randomWord.hint}</p>}
         </div>
         
