@@ -19,6 +19,7 @@ function App() {
   const [isGameOver, setIsGameOver] = useState(false)
  
   const gameWon = guessedLetters.length !== 0 && randomWord.word.split("").every(letter=>guessedLetters.includes(letter))
+  const [playAgnBtnIsShown, setPlayAgnBtnIsShown] = useState(false)
 
 //accessibility 
 //announcement variable
@@ -178,9 +179,9 @@ return (
                       >{letter.toUpperCase()}</button>
       })}
       {isGameOver && <p className = "sr-only" aria-live={isGameOver? "assertive": "polite"}>{announcementMessage}</p>}
-      {isGameOver && <p className="text-xs sm:text-xl text-center">Judge: A verdict has been reached...your client is... <span className="opacity-0 animate-fade-in">{verdict}!</span></p>}
+      {isGameOver && <p className="text-xs sm:text-xl text-center">Judge: A verdict has been reached...your client is... <span className="opacity-0 animate-verdict">{verdict}!</span></p>}
       </div>
-      {isGameOver && <button className="border text-xs sm:text-lg px-2 py-1 mb-4 sm:px-4 sm:py-2 mt-4 rounded-lg shadow-lg hover:bg-blue-50 border-blue-500 border-2 hover:font-semibold" onClick={()=>startNewGame()} ref={playAgainRef}>PLAY AGAIN</button>}
+      {isGameOver && <button className="border text-xs sm:text-lg px-2 py-1 mb-4 sm:px-4 sm:py-2 mt-4 rounded-lg shadow-lg hover:bg-blue-50 border-blue-500 border-2 hover:font-semibold opacity-0 animate-playagain" onClick={()=>startNewGame()} ref={playAgainRef}>PLAY AGAIN?</button>}
     </section>
     </div>)}
     

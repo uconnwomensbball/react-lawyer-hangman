@@ -17,9 +17,11 @@ module.exports = {
         },
       },
       animation: {
-        'fade-in': 'fadeIn 5s ease-in forwards',
+        'verdict': 'fadeIn 3s ease-in forwards',
+        'playagain': 'fadeIn 3s ease-in 3s forwards',
       },
     },
   },
   plugins: [],
 }
+
