@@ -2,13 +2,13 @@ import { useState, useEffect, useRef } from 'react'
 import clsx from 'clsx'
 import Confetti from "react-confetti"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import {  faGavel, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
+import { faGavel, faScaleBalanced } from "@fortawesome/free-solid-svg-icons"
 import { criminalLawWords, civilLawWords, caseCheckpoints } from "./data.js"
 import './index.css'
 
 function App() {
  
-  const randomNumber = Math.floor(Math.random() * criminalLawWords.length)
+  const randomNumber = Math.floor(Math.random() * criminalLawWords.length + 1) 
   const [randomWord, setRandomWord] = useState({word:"", hint:""})
   const alphabet = "abcdefghijklmnopqrstuvwxyz"
   const [guessedLetters, setGuessedLetters] = useState([])
@@ -19,12 +19,12 @@ function App() {
   const [isGameOver, setIsGameOver] = useState(false)
   const gameWon = guessedLetters.length !== 0 && randomWord.word.split("").every(letter=>guessedLetters.includes(letter))
 
-
 //announcement variable (accessibility) 
   const [announcementMessage, setAnnouncementMessage] = useState("")
 
 //refs (accessibility) 
   const firstKeyRef = useRef(null)
+  const verdictRef = useRef(null)
   const playAgainRef = useRef(null)
   const instructionRef = useRef(null)
 
@@ -42,10 +42,10 @@ useEffect(()=>{
   }
 }, [gameStarted, isGameOver])
 
-//useEffect (accessibility) - if game is over, focuses to playAgainBtn
+//useEffect (accessibility) - if game is over, focuses to verdictRef so the verdict is read
 useEffect(()=>{
   if (isGameOver){
-    playAgainRef.current?.focus()
+    verdictRef.current?.focus()
   }
 }, [isGameOver])
 
@@ -74,7 +74,7 @@ useEffect(()=>{
     let message 
     if (finalWrongGuess){
       setIsGameOver(true)
-      message = `Game over. The word was ${randomWord.word}. A verdict has been reached and your client is ${verdict}!`
+      message = `Game over. The word was ${randomWord.word}. A verdict has been reached and your client is ${verdict}! Play again?`
     }else if (isCorrectGuess){
        message = `${letter} is in the word. ${accessibleWord}`
     }else{
@@ -110,7 +110,7 @@ function showHint(){
 useEffect(()=>{
   if (gameWon){
     setIsGameOver(true)
-    setAnnouncementMessage(`Game over. You correctly guessed the word. The word was ${randomWord.word}. A verdict has been reached...your client is ${verdict}!`)
+    setAnnouncementMessage(`Game over. You correctly guessed the word. The word was ${randomWord.word}. A verdict has been reached and your client is ${verdict}! Play again?`)
   }
 }, [gameWon, verdict, randomWord.word])
 
@@ -155,20 +155,16 @@ return (
               <p className={!guessedLetters.includes(letter) && randomWord.word.includes(letter)? "text-red-500": ""}>
                 {letter.toUpperCase()}
               </p>
-              
-              </span>)}
-          
+            </span>)}
         </div>
-        
-        <div className="sm:min-h-[65px] min-h-[50px] flex items-center justify-center mt-2">
+        <div className="sm:min-h-[65px] min-h-[50px] flex items-center justify-center mt-2" aria-live="polite">
           {!hint? <button className="text-xs px-2 border-2 border-green-500 sm:font-medium sm:px-4 sm:py-2 rounded-2xl sm:text-xl shadow-lg hover:bg-green-50 hover:font-semibold tracking-wide" onClick={showHint}>Show Hint?</button>:
-          <p className="sm:text-xl text-center text-xs"> Hint: {randomWord.hint}</p>}
+          <p className="sm:text-xl text-center text-xs" aria-hidden={isGameOver? "true": "false"}> Hint: {randomWord.hint}</p>}
         </div>
-        
       </section>
  
     {/*Keyboard*/}
-    <section className="flex flex-col justify-center items-center sm:mb-6">
+    <section className="flex flex-col justify-center items-center">
       <div className="flex flex-row justify-center items-center flex-wrap gap-1 text-sm sm:text-sm">
       {!isGameOver && alphabet.split("").map(letter=>{
         return <button key={letter} 
@@ -177,8 +173,8 @@ return (
                       ref={letter === "A"? firstKeyRef: null}
                       >{letter.toUpperCase()}</button>
       })}
-      {isGameOver && <p className = "sr-only" aria-live={isGameOver? "assertive": "polite"}>{announcementMessage}</p>}
-      {isGameOver && <p className="text-xs sm:text-xl text-center">Judge: A verdict has been reached...your client is... <span className="opacity-0 animate-verdict">{verdict}!</span></p>}
+      {isGameOver && <p className = "sr-only" aria-live={isGameOver? "assertive": "polite"} ref={verdictRef} tabIndex={-1}>{announcementMessage}</p>}
+      {isGameOver && <p className="text-xs sm:text-xl text-center mb-2 sm:mb-6">Judge: A verdict has been reached...your client is... <span className="opacity-0 animate-verdict">{verdict}!</span></p>}
       </div>
       {isGameOver && <button className="border text-xs sm:text-lg px-2 py-1 mb-4 sm:px-4 sm:py-2 mt-4 rounded-lg shadow-lg hover:bg-blue-50 border-blue-500 border-2 hover:font-semibold opacity-0 animate-playagain" onClick={()=>startNewGame()} ref={playAgainRef}>PLAY AGAIN?</button>}
     </section>
@@ -189,8 +185,8 @@ return (
       <h1 className="font-medium sm:text-4xl font-semibold sm:font-medium sm:mb-6 mb-4 mt-4 tracking-wide">Lawyer Hangman</h1>
       <h2 className="text-xs text-center sm:text-xl tracking-wide" aria-live="polite">Would you like to guess legal terms related to criminal law or civil law? </h2>
       <div className="flex gap-4 pt-8">
-        <button className="text-xs px-2 border-2 border-blue-500 tracking-wide sm:font-medium sm:px-4 sm:py-2 rounded-2xl sm:text-xl shadow-lg hover:bg-blue-50 hover:font-semibold" onClick={()=>startGame(criminalLawWords[randomNumber])}>Criminal Law 🚓</button>
-        <button className="text-xs px-2 border-2 border-green-600 tracking-wide font-medium px-4 py-2 rounded-2xl sm:text-xl shadow-lg hover:bg-green-50 hover:font-semibold" onClick={()=>startGame(civilLawWords[randomNumber])}>Civil Law 💰 </button>
+        <button className="text-xs px-2 border-2 border-blue-500 tracking-wide sm:font-medium sm:px-4 sm:py-2 rounded-2xl sm:text-xl shadow-lg hover:bg-blue-50 hover:font-semibold" onClick={()=>startGame(criminalLawWords[randomNumber])}>Criminal Law <span aria-hidden="true">🚓</span></button>
+        <button className="text-xs px-2 border-2 border-green-600 tracking-wide font-medium px-4 py-2 rounded-2xl sm:text-xl shadow-lg hover:bg-green-50 hover:font-semibold" onClick={()=>startGame(civilLawWords[randomNumber])}>Civil Law <span aria-hidden="true">💰</span></button>
       </div>
     </div>)}
 
